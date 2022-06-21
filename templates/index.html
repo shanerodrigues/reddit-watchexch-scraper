@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>News Digest</title>
+  </head>
+  <body>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul class="flashes">
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %} {% if user_email == None %}
+    <p>Please enter your email to sign up/log in:</p>
+    <form action="/login" method="post">
+      <input type="text" name="email" />
+      <input type="submit" value="Login" />
+    </form>
+    {% else %}
+    <p>Logged in as {{ user_email }}.</p>
+    {% for schedule in user_schedule %}
+    <div>You've scheduled an email for {{schedule.time_scheduled}} UTC</div>
+    {% endfor %}
+    <h1>Subscriptions</h1>
+    <ul>
+      {% for subscription in user_subscriptions %}
+      <li>
+        <a href="{{ subscription.url }}">{{ subscription.title }}</a>
+        <form action="/unsubscribe" method="post" style="display: inline">
+          <input type="hidden" name="query_url" value="{{subscription.url}}" />
+          <input type="submit" value="Unsubscribe" />
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <p>Add a new query:</p>
+    <form action="/subscribe" method="post">
+      <input type="text" name="search_query" />
+      <input type="submit" value="Subscribe" />
+    </form>
+
+    {% for subscription in user_subscriptions %}
+
+    <p>Send digest to your email now:</p>
+    <form action="/send-digest" method="post">
+      <input type="submit" value="Send digest" />
+    </form>
+
+    <p>Choose a time to send your daily digest (must be UTC):</p>
+    <form action="/schedule-digest" method="post">
+      <input type="time" name="digest_time" />
+      <input type="submit" value="Schedule digest" />
+    </form>
+
+    {% for schedule in user_schedule %}
+    <div style="margin-bottom: 2%">
+      <p>Remove scheduled email</p>
+      <form action="/remove-schedule" method="post">
+        <input type="submit" value="Remove scheduled email" />
+      </form>
+    </div>
+
+    {% endfor %} {% endfor %}
+
+    <script>
+      function sendTimeToServer() {
+        let time = new Date()
+        let i = document.createElement("img")
+        utc = time.toISOString()
+        // i.src = "/getTime?time=" + utc
+
+        timezone = time.getTimezoneOffset() / 60
+
+        document.getElementById("timezone").innerHTML =
+          "Your timezone offset is " + timezone
+        if (timezone < 0) {
+          document.getElementById("guide").innerHTML =
+            "You need to subtract your time by the offset to get UTC"
+        }
+        if (timezone > 0) {
+          document.getElementById("guide").innerHTML =
+            "You need to add your time by the offset to get UTC"
+        }
+      }
+    </script>
+
+    <div style="margin-top: 30px">
+      <div id="timezone">Your timezone offset is</div>
+      <div id="guide"></div>
+      <button onclick="sendTimeToServer()">Find your timezone</button>
+      <a style="display: block; margin-top: 100px" href="{{url_for('logout')}}"
+        >Logout</a
+      >
+    </div>
+
+    {% endif %}
+  </body>
+</html>
+

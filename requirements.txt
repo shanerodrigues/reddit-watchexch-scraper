@@ -1,0 +1,12 @@
+celery==5.2.7
+Flask==1.1.2
+praw==7.6.0
+psaw==0.1.0
+pymongo==4.1.1
+pystache==0.6.0
+python-dotenv==0.20.0
+python_dateutil==2.8.2
+redisbeat==1.2.4
+requests==2.21.0
+schedule==1.1.0
+sib_api_v3_sdk==7.5.0
